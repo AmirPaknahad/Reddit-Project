@@ -226,7 +226,7 @@ public class Account {
         return posts.size();
     }
     public void showProfilePost(int postIndex){
-        posts.get(postIndex).showPost();
+        posts.get(postIndex).reviewPost();
     }
     public void upVoteProfilePost(int postIndex, Account acc){
         posts.get(postIndex).upVote(acc);

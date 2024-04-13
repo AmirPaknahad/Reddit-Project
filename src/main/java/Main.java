@@ -213,8 +213,97 @@ public class Main {
             return 0;
         }
         else{
-            redditMenu(userIndx);
+            try {
+                int timeLineIndex = Integer.parseInt(str);
+                if(timeLineIndex <= Post.postsList.size()){
+                    timeLineIndex = Post.postsList.size() - timeLineIndex;
+                    timeLineShowPost(timeLineIndex, userIndx);
+                }
+
+                else{
+                    System.out.println("\tinvalid input");
+                    redditMenu(userIndx);
+                }
+            }
+            catch (NumberFormatException e) {
+                System.out.println("\tinvalid input");
+                redditMenu(userIndx);
+            }
         }
+
+        return 0;
+    }
+    public static int timeLineShowPost(int postIndex, int userIndex){
+        Post.postsList.get(postIndex).showPost();
+        System.out.print("\tEnter what you want: ");
+        String str = in.nextLine();
+        if (str.equals("Back")){
+            redditMenu(userIndex);
+            return 0;
+        }
+        else if(str.equals("UpVote")){
+            Post.postsList.get(postIndex).upVote(Account.users.get(userIndex));
+            timeLineShowPost(postIndex, userIndex);
+        }
+        else if(str.equals("DownVote")){
+            Post.postsList.get(postIndex).downVote(Account.users.get(userIndex));
+            timeLineShowPost(postIndex, userIndex);
+        }
+        else if(str.equals("AddComment")){
+            System.out.println();
+            System.out.print("\tEnter the comment: ");
+            String cmnt = in.nextLine();
+            Comment comment = new Comment();
+            comment.commentBody = cmnt;
+            comment.user = Account.users.get(userIndex);
+            Post.postsList.get(postIndex).addComment(comment);
+            timeLineShowPost(postIndex, userIndex);
+
+        }
+        else{
+            try {
+                int commentIndex = Integer.parseInt(str);
+                commentIndex--;
+                if (commentIndex < Post.postsList.get(postIndex).getCommentListSize()){
+                    commentFortimeLineShowPost(postIndex, userIndex, commentIndex);
+                }
+                else{
+                    System.out.println("\tinvalid input.");
+                    timeLineShowPost(postIndex, userIndex);
+                }
+            }
+            catch (NumberFormatException e) {
+                System.out.println("\tinvalid input.");
+                timeLineShowPost(postIndex, userIndex);
+            }
+        }
+        return 0;
+    }
+    public static int commentFortimeLineShowPost(int postIndex, int userIndex, int commentIndex){
+        System.out.println();
+        Post.postsList.get(postIndex).showComment(commentIndex);
+        System.out.println();
+        System.out.print("\tEnter what you want(UpVote / DownVote / Back): ");
+        String str = in.nextLine();
+        if (str.equals("Back")){
+            timeLineShowPost(postIndex, userIndex);
+            return 0;
+        }
+        else if(str.equals("UpVote")){
+            Post.postsList.get(postIndex).commentUpVote(commentIndex, Account.users.get(userIndex));
+            commentFortimeLineShowPost(postIndex, userIndex, commentIndex);
+        }
+        else if(str.equals("DownVote")){
+            Post.postsList.get(postIndex).commentDownVote(commentIndex, Account.users.get(userIndex));
+            commentFortimeLineShowPost(postIndex, userIndex, commentIndex);
+        }
+        else{
+            System.out.println();
+            System.out.print("\tinvalid input");
+            commentFortimeLineShowPost(postIndex, userIndex, commentIndex);
+            return 0;
+        }
+
 
         return 0;
     }
@@ -370,7 +459,10 @@ public class Main {
     }
     public static int profilePostPage(int userIndex, int user){
         System.out.println("\t-------------------------");
-        Account.users.get(userIndex).showSavedPost();
+        for(int i = 0; i < Account.users.get(userIndex).getProfilePostSize(); i++){
+            System.out.print("\t" + (i + 1) + "- ");
+            Account.users.get(userIndex).showProfilePost(i);
+        }
         System.out.println();
         System.out.println("\tBack");
         System.out.println();
@@ -487,6 +579,8 @@ public class Main {
             int user = Account.getIndexOfUser(str);
             if (user < 0){
                 System.out.println("\tnothing found!");
+            }
+            else{
                 profile(userIndex, user);
             }
         }
